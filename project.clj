@@ -11,23 +11,27 @@
             [lein-figwheel "0.5.19"]]
   :hooks [leiningen.cljsbuild]
 
-  :clean-targets ^{:protect false} ["resources/public/js"]
+  :clean-targets ^{:protect false} ["resources/public/compiled"]
   :cljsbuild
   {:builds [; development build with figwheel hot swap
-            {:id "development"
+            {:id "dev"
              :source-paths ["src"]
              :figwheel true
              :compiler
              {:main "enso.core"
-              :output-to "resources/public/js/main.js"
-              :output-dir "resources/public/js/development"
-              :asset-path "js/development"}}
+              :foreign-libs [{:file "resources/public/js/three_r111.js"
+                              :provides ["three"]}]
+              :output-to "resources/public/js/compiled/main.js"
+              :output-dir "resources/public/js/compiled/dev"
+              :asset-path "js/compiled/dev"}}
             ; minified and bundled build for deployment
-            {:id "optimized"
+            {:id "opt"
              :source-paths ["src"]
              :compiler
              {:main "enso.core"
-              :output-to "resources/public/js/main.js"
-              :output-dir "resources/public/js/optimized"
-              :asset-path "js/optimized"
+              :foreign-libs [{:file "resources/public/js/three_r111.min.js"
+                              :provides ["three"]}]
+              :output-to "resources/public/js/compiled/main.js"
+              :output-dir "resources/public/js/compiled/opt"
+              :asset-path "js/compiled/opt"
               :optimizations :advanced}}]})
