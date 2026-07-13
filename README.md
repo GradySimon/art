@@ -23,7 +23,7 @@ Every work has a workspace-relative path beginning with `works/`. Its full
 catalog path combines the workspace directory and work path:
 
 ```text
-metaball-studies/works/rejoicing-slugs
+metaballs/works/rejoicing-slugs
 ```
 
 The built-in gallery discovers these workspaces at build time. It is only one
@@ -45,7 +45,7 @@ import WorkPlayer from "@grady/art/WorkPlayer.astro";
 ---
 
 <WorkPlayer
-  work="metaball-studies/works/rejoicing-slugs"
+  work="metaballs/works/rejoicing-slugs"
   aspectRatio={1.4}
   label="Rejoicing Slugs"
 />
@@ -54,7 +54,7 @@ import WorkPlayer from "@grady/art/WorkPlayer.astro";
 For direct programmatic use with the narrowest possible import surface:
 
 ```ts
-import {WORKS} from "@grady/art/workspaces/metaball-studies";
+import {WORKS} from "@grady/art/workspaces/metaballs";
 
 const work = WORKS.find(({path}) => path === "works/rejoicing-slugs");
 const instance = await work.mount(container);
