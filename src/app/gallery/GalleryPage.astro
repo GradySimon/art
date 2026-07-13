@@ -1,5 +1,12 @@
 ---
-import Gallery from "../app/gallery/Gallery.astro";
+import Gallery from "./Gallery.astro";
+
+interface Props {
+  initialWork?: string;
+  workBasePath: string;
+}
+
+const {initialWork, workBasePath} = Astro.props;
 ---
 
 <!doctype html>
@@ -12,6 +19,6 @@ import Gallery from "../app/gallery/Gallery.astro";
     <title>Works</title>
   </head>
   <body>
-    <Gallery />
+    <Gallery initialWork={initialWork} basePath={workBasePath} />
   </body>
 </html>

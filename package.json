@@ -6,6 +6,10 @@
   "description": "A portable catalog and gallery for browser-based artworks",
   "exports": {
     ".": "./src/core/index.ts",
+    "./astro": "./src/integration.ts",
+    "./catalog": "./src/runtime/discover.ts",
+    "./Gallery.astro": "./src/app/gallery/Gallery.astro",
+    "./gallery": "./src/app/gallery/gallery-route.ts",
     "./WorkPlayer.astro": "./src/components/WorkPlayer.astro",
     "./runtime": "./src/runtime/index.ts",
     "./workspaces/*": "./src/workspaces/*/index.ts"
@@ -21,7 +25,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "yaml": "^2.8.2"
   },
   "peerDependencies": {
     "astro": "^5.18.0"
@@ -30,7 +35,6 @@
     "@astrojs/check": "^0.9.6",
     "@types/three": "^0.185.1",
     "astro": "^5.18.0",
-    "typescript": "^5.9.3",
-    "yaml": "^2.8.2"
+    "typescript": "^5.9.3"
   }
 }

@@ -61,6 +61,21 @@ import WorkPlayer from "@grady/art/WorkPlayer.astro";
 />
 ```
 
+The complete gallery can inject its coordinated route tree into another Astro
+site. Configure only its mount point:
+
+```js
+import {defineConfig} from "astro/config";
+import artGallery from "@grady/art/astro";
+
+export default defineConfig({
+  integrations: [artGallery({basePath: "/art"})],
+});
+```
+
+This provides `/art/` and every `/art/works/<workspace-path>/<work-path>` page.
+The host does not define or coordinate the gallery's internal routes.
+
 For direct programmatic use with the narrowest possible import surface:
 
 ```ts

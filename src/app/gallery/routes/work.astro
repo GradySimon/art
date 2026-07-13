@@ -1,0 +1,27 @@
+---
+import {discoverCatalog} from "../../../runtime/discover";
+import GalleryPage from "../GalleryPage.astro";
+import {galleryWorkPath} from "../gallery-route";
+
+export async function getStaticPaths() {
+  const catalog = await discoverCatalog();
+  return catalog.map(({fullPath}) => ({
+    params: {path: galleryWorkPath(fullPath)},
+    props: {initialWork: fullPath},
+  }));
+}
+
+interface Props {
+  initialWork: string;
+}
+
+const {initialWork} = Astro.props;
+const routeSuffix = `/${galleryWorkPath(initialWork)}`;
+const pathname = Astro.url.pathname.replace(/\/+$/g, "");
+if (!pathname.endsWith(routeSuffix)) {
+  throw new Error(`Unexpected gallery work route: ${pathname}`);
+}
+const workBasePath = pathname.slice(0, -routeSuffix.length);
+---
+
+<GalleryPage initialWork={initialWork} workBasePath={workBasePath} />

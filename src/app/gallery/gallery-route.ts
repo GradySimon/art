@@ -5,6 +5,7 @@ export function galleryWorkPath(fullPath: string): string {
   return `${workspacePath}/${workPath.slice("works/".length)}`;
 }
 
-export function galleryWorkHref(fullPath: string): string {
-  return `/works/${galleryWorkPath(fullPath)}`;
+export function galleryWorkHref(fullPath: string, basePath = "/works"): string {
+  const normalizedBasePath = `/${basePath.replace(/^\/+|\/+$/g, "")}`;
+  return `${normalizedBasePath}/${galleryWorkPath(fullPath)}`;
 }

@@ -6,11 +6,13 @@ import "./gallery.css";
 
 interface Props {
   initialWork?: string;
+  basePath?: string;
 }
 
 const catalog = await discoverCatalog();
 if (catalog.length === 0) throw new Error("No works were discovered");
 const requestedInitial = Astro.props.initialWork;
+const basePath = Astro.props.basePath ?? "/works";
 const initialIndex = requestedInitial
   ? catalog.findIndex(({fullPath}) => fullPath === requestedInitial)
   : 0;
@@ -18,7 +20,11 @@ if (initialIndex < 0) throw new Error(`Unknown initial work: ${requestedInitial}
 const initial = catalog[initialIndex];
 ---
 
-<main class="gallery" data-gallery data-initial-href={galleryWorkHref(initial.fullPath)}>
+<main
+  class="gallery"
+  data-gallery
+  data-initial-href={galleryWorkHref(initial.fullPath, basePath)}
+>
   <header class="masthead">
     <div>
       <p class="eyebrow">Art workspaces</p>
@@ -33,7 +39,7 @@ const initial = catalog[initialIndex];
             <option
               value={work.fullPath}
               selected={index === initialIndex}
-              data-href={galleryWorkHref(work.fullPath)}
+              data-href={galleryWorkHref(work.fullPath, basePath)}
               data-title={work.title}
               data-description={work.description}
               data-provenance={work.provenance ?? ""}

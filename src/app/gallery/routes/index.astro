@@ -1,0 +1,8 @@
+---
+import GalleryPage from "../GalleryPage.astro";
+
+const galleryBasePath = Astro.url.pathname.replace(/\/+$/g, "");
+const workBasePath = `${galleryBasePath}/works`;
+---
+
+<GalleryPage workBasePath={workBasePath} />
