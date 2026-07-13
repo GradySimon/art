@@ -1,4 +1,4 @@
-import { Vec2 } from './common-types';
+import type { Vec2 } from './common-types';
 
 export enum MetaballKind {
   QUADRATIC = 1,
@@ -85,8 +85,9 @@ const orbitalRing = (
   count: number,
   baseOrbit: CircularOrbit): Vec2[] => {
   const points: Vec2[] = [];
+  const period = baseOrbit.period ?? 4000;
   for (let i = 0; i < count; i++) {
-    baseOrbit.tOffset = i * (baseOrbit.period / count);
+    baseOrbit.tOffset = i * (period / count);
     points.push(circularOrbit(t, baseOrbit));
   }
   return points;

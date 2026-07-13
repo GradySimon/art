@@ -1,267 +1,136 @@
-import * as THREE from 'three';
-import { Vec2 } from './common-types';
-import { Metaball, MetaballKind } from './metaball';
-import { OrbitWorld } from './orbit-world';
-import FragShader from './shader/metaball.frag';
-import VertShader from './shader/metaball.vert';
-// import * as gifjs from './assets/js/gif'
+import * as THREE from "three";
+import type { Vec2 } from "./common-types";
+import { type Metaball, MetaballKind, metaballScene } from "./metaball";
+import fragmentShader from "./shader/metaball.frag?raw";
+import vertexShader from "./shader/metaball.vert?raw";
+import "./style.css";
 
-interface ShaderState {
-  uniforms: Record<string, any>;
-  mesh: THREE.Mesh;
-}
+type Study = "rings" | "orbiters" | "cursor";
 
-interface AnimationState {
-  scene: THREE.Scene;
-  camera: THREE.Camera;
-  renderer: THREE.Renderer;
-  canvas: HTMLCanvasElement;
-  shader: ShaderState;
-  aspectRatio: number;
-  mouse: Vec2;
-  metaballs?: Metaball[];
-  time: {
-    // Time (millis) at which the animation started.
-    start: number;
-    // Time (millis) elapsed since the beginning.
-    elapsed: number;
-    // Time (millis) elapsed since last step.
-    stepTime?: number;
-    // Number of steps elapsed.
-    steps: number;
-  };
-  world: OrbitWorld;
-}
-
-const getAspectRatio = (): number => window.innerWidth / window.innerHeight;
-
-const fetchText = async (url: string): Promise<string> => {
-  const response = await fetch(url);
-  return response.text();
+const MAX_METABALLS = 100;
+const studyCopy: Record<Study, [string, string]> = {
+  rings: ["Study 01", "Counter-rotating positive and negative fields"],
+  orbiters: ["Study 02", "Small bodies tracing an eccentric central mass"],
+  cursor: ["Study 03", "A field that follows your pointer"],
 };
 
-const initShader = async () => {
-  console.log(VertShader);
-  console.log(FragShader);
-  const [vertexShader, fragmentShader] = await Promise.all([
-    fetchText(VertShader),
-    fetchText(FragShader)
-  ]);
-  console.log(vertexShader);
-  console.log(fragmentShader);
-  const geometry = new THREE.PlaneBufferGeometry(2, 2);
-  const uniforms: Record<
-    string,
-    { type: string; value: number[] | number | THREE.Vector2 }
-  > = {
-    u_resolution: {
-      type: 'v2',
-      value: new THREE.Vector2(window.innerWidth, window.innerHeight)
-    },
-    u_mouse: { type: 'v2', value: new THREE.Vector2() },
-    u_metaball_kind: { type: 'intv', value: [] },
-    u_metaball_pos: { type: 'v2v', value: [] },
-    u_metaball_radius: {
-      type: 'fv',
-      value: []
-    },
-    u_num_metaballs: {
-      type: 'int',
-      value: 2
-    },
-    u_threshold: {
-      type: 'float',
-      value: Number.POSITIVE_INFINITY
-    }
-  };
-  const material = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  return { uniforms, mesh };
+const canvasHost = document.querySelector<HTMLDivElement>("#canvas")!;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+canvasHost.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+const resolution = new THREE.Vector2();
+const uniforms = {
+  u_resolution: { value: resolution },
+  u_metaball_kind: { value: new Int32Array(MAX_METABALLS) },
+  u_metaball_pos: {
+    value: Array.from({ length: MAX_METABALLS }, () => new THREE.Vector2()),
+  },
+  u_metaball_radius: { value: new Float32Array(MAX_METABALLS) },
+  u_num_metaballs: { value: 0 },
+  u_threshold: { value: 0.3 },
 };
 
-const windowSizeUpdater = (state: AnimationState): ((e: UIEvent) => void) => {
-  return (_e: UIEvent) => {
-    state.renderer.setSize(window.innerWidth, window.innerHeight);
-  };
-};
+scene.add(
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms }),
+  ),
+);
 
-const mouseUpdater = (state: AnimationState): ((e: MouseEvent) => void) => {
-  return (e: MouseEvent) => {
-    state.mouse = [
-      (2 * (e.pageX - window.innerWidth / 2)) / window.innerWidth,
-      (2 * (window.innerHeight - e.pageY - window.innerHeight / 2)) /
-      window.innerHeight
-    ];
-    if (state.aspectRatio > 1) {
-      state.mouse[0] *= state.aspectRatio;
-    } else {
-      state.mouse[1] /= state.aspectRatio;
-    }
-  };
-};
+let activeStudy: Study = "rings";
+let pointer: Vec2 = [0, 0];
+let paused = false;
+const startedAt = performance.now();
 
-const init = async (): Promise<AnimationState> => {
-  const scene = new THREE.Scene();
-
-  const aspectRatio = window.innerWidth / window.innerHeight;
-  const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-  camera.position.z = 1;
-
-  const { uniforms, mesh } = await initShader();
-  scene.add(mesh);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio * 2);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  const canvas = renderer.domElement;
-  document.body.appendChild(canvas);
-
-  const world = new OrbitWorld();
-  await world.init(10);
-
-  const state: AnimationState = {
-    scene,
-    camera,
-    renderer,
-    canvas,
-    aspectRatio,
-    mouse: [0, 0],
-    shader: { uniforms, mesh },
-    time: { start: Date.now(), elapsed: 0, steps: 0 },
-    world: world
-  };
-  document.onmousemove = mouseUpdater(state);
-  window.addEventListener('resize', windowSizeUpdater(state), false);
-  return state;
-};
-
-interface MetaballUniformValues {
-  u_num_metaballs: number;
-  u_metaball_kind: MetaballKind[];
-  u_metaball_pos: number[];
-  u_metaball_radius: number[];
-  u_threshold: number;
-}
-
-const metaballsToUniforms = (metaballs: Metaball[]): MetaballUniformValues => {
-  const kinds: MetaballKind[] = [];
-  const flatPositions: number[] = [];
-  const radii: number[] = [];
-  for (const metaball of metaballs) {
-    kinds.push(metaball.kind || MetaballKind.QUADRATIC);
-    flatPositions.push(metaball.position[0], metaball.position[1]);
-    radii.push(metaball.radius);
+function orbiters(elapsed: number): Metaball[] {
+  const bodies: Metaball[] = [
+    { position: [0, 0], radius: 0.24 },
+    { position: [0, 0], radius: 0.34, kind: MetaballKind.ZERO },
+  ];
+  for (let i = 0; i < 14; i += 1) {
+    const lane = i % 3;
+    const radius = 0.48 + lane * 0.17;
+    const speed = (lane === 1 ? -1 : 1) * (0.00008 + lane * 0.000025);
+    const angle = elapsed * speed + (i / 14) * Math.PI * 2;
+    bodies.push({
+      position: [Math.cos(angle) * radius, Math.sin(angle) * radius * 0.72],
+      radius: 0.045 + (i % 4) * 0.008,
+      kind: i % 5 === 0 ? MetaballKind.NEG_QUADRATIC : MetaballKind.QUADRATIC,
+    });
   }
-  return {
-    u_num_metaballs: metaballs.length,
-    u_metaball_kind: kinds,
-    u_metaball_pos: flatPositions,
-    u_metaball_radius: radii,
-    u_threshold: 0.3
-  };
-};
+  return bodies;
+}
 
-const update = (state: AnimationState): AnimationState => {
-  const prevElapsed: number = state.time.elapsed;
-  state.time.elapsed = Date.now() - state.time.start;
-  state.time.stepTime = state.time.elapsed - prevElapsed;
+function cursorField(elapsed: number): Metaball[] {
+  const pulse = 0.11 + Math.sin(elapsed * 0.0018) * 0.025;
+  return [
+    { position: pointer, radius: pulse },
+    { position: [-pointer[0] * 0.55, -pointer[1] * 0.55], radius: 0.2 },
+    { position: [0, 0], radius: 0.3, kind: MetaballKind.ZERO },
+    { position: [pointer[0] * 0.35, -pointer[1] * 0.35], radius: 0.085, kind: MetaballKind.NEG_LINEAR },
+  ];
+}
 
-  state.shader.uniforms.u_resolution.value.x = state.renderer.domElement.width;
-  state.shader.uniforms.u_resolution.value.y = state.renderer.domElement.height;
+function ballsFor(study: Study, elapsed: number): Metaball[] {
+  if (study === "rings") return metaballScene({ elapsed_time: elapsed, mouse: pointer });
+  if (study === "orbiters") return orbiters(elapsed);
+  return cursorField(elapsed);
+}
 
-  state.aspectRatio = getAspectRatio();
-
-  // const metaballs = metaballScene({
-  //   elapsed_time: state.time.elapsed,
-  //   mouse: state.mouse
-  // });
-  state.world.step();
-  const metaballs = state.world.asMetaballs();
-
-  const {
-    u_num_metaballs,
-    u_metaball_kind,
-    u_metaball_pos,
-    u_metaball_radius,
-    u_threshold
-  } = metaballsToUniforms(metaballs);
-  state.shader.uniforms.u_num_metaballs.value = u_num_metaballs;
-  state.shader.uniforms.u_metaball_kind.value = u_metaball_kind;
-  state.shader.uniforms.u_metaball_pos.value = u_metaball_pos;
-  state.shader.uniforms.u_metaball_radius.value = u_metaball_radius;
-  state.shader.uniforms.u_threshold.value = u_threshold;
-
-  state.time.steps++;
-  return state;
-};
-
-const animate = (
-  state: AnimationState,
-  capturer?: any,
-  capturerStarted?: boolean
-) => {
-  state = update(state);
-  state.renderer.render(state.scene, state.camera);
-  if (capturer !== undefined) {
-    if (!capturerStarted) {
-      capturer.start();
-      capturerStarted = true;
-    }
-    capturer.capture(state.canvas);
-  }
-  requestAnimationFrame(() => {
-    animate(state, capturer, capturerStarted);
+function uploadMetaballs(balls: Metaball[]): void {
+  uniforms.u_num_metaballs.value = Math.min(balls.length, MAX_METABALLS);
+  balls.slice(0, MAX_METABALLS).forEach((ball, index) => {
+    uniforms.u_metaball_kind.value[index] = ball.kind ?? MetaballKind.QUADRATIC;
+    uniforms.u_metaball_pos.value[index].set(...ball.position);
+    uniforms.u_metaball_radius.value[index] = ball.radius;
   });
-};
-
-const start = async () => {
-  const state = await init();
-  animate(state);
-};
-
-interface CaptureArgs {
-  // See https://github.com/spite/ccapture.js
-  framerate: number;
-  format: 'webm' | 'gif' | 'png' | 'jpg' | 'ffmpegserver';
-  timeLimit?: number; // Seconds until stop and download
-  motionBlurFrames?: number;
-  verbose?: boolean;
-  display?: boolean; // Adds a widget with capturing info
-  autoSaveTime?: number; // Interval of seconds between saves
-  startTime?: number; // Seconds to jump forawrd at start
-  workersPath?: string;
 }
 
-const captureArgs: CaptureArgs = {
-  framerate: 24,
-  timeLimit: 16,
-  format: 'gif',
-  display: true,
-  verbose: true,
-  workersPath: 'http://localhost:1234/js/'
-};
-
-const startAndCapture = async () => {
-  const state = await init();
-  const processedCaptureArgs: CaptureArgs = { ...captureArgs };
-  processedCaptureArgs.timeLimit -= 1 / captureArgs.framerate;
-  const capturer = new CCapture(processedCaptureArgs);
-  animate(state, capturer);
-};
-
-const capture = false;
-// const capture = true;
-
-// console.debug = () => {};
-
-if (capture) {
-  startAndCapture();
-} else {
-  start();
+function resize(): void {
+  const { width, height } = canvasHost.getBoundingClientRect();
+  renderer.setSize(width, height, false);
+  renderer.getDrawingBufferSize(resolution);
 }
 
-console.log('Animation begun.');
+function animate(now: number): void {
+  if (!paused) uploadMetaballs(ballsFor(activeStudy, now - startedAt));
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+
+canvasHost.addEventListener("pointermove", (event) => {
+  const bounds = canvasHost.getBoundingClientRect();
+  const aspect = bounds.width / bounds.height;
+  pointer = [
+    ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+    1 - ((event.clientY - bounds.top) / bounds.height) * 2,
+  ];
+  if (aspect > 1) pointer[0] *= aspect;
+  else pointer[1] /= aspect;
+});
+
+document.querySelectorAll<HTMLButtonElement>("[data-study]").forEach((button) => {
+  button.addEventListener("click", () => {
+    activeStudy = button.dataset.study as Study;
+    document.querySelectorAll<HTMLButtonElement>("[data-study]").forEach((item) =>
+      item.setAttribute("aria-pressed", String(item === button)),
+    );
+    const [number, note] = studyCopy[activeStudy];
+    document.querySelector("#study-number")!.textContent = number;
+    document.querySelector("#study-note")!.textContent = note;
+  });
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    paused = !paused;
+    event.preventDefault();
+  }
+});
+window.addEventListener("resize", resize);
+resize();
+requestAnimationFrame(animate);

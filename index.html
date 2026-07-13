@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e8e5df" />
+    <title>Metaball Studies</title>
+  </head>
+  <body>
+    <main id="app">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">Generative studies · 2020–2026</p>
+          <h1>Metaball</h1>
+        </div>
+        <nav aria-label="Choose a study">
+          <button data-study="rings" aria-pressed="true">Orbital rings</button>
+          <button data-study="orbiters" aria-pressed="false">Orbiters</button>
+          <button data-study="cursor" aria-pressed="false">Cursor field</button>
+        </nav>
+      </header>
+      <section class="canvas-shell" aria-label="Metaball animation">
+        <div id="canvas"></div>
+        <div class="legend">
+          <span id="study-number">Study 01</span>
+          <span id="study-note">Counter-rotating positive and negative fields</span>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

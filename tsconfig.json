@@ -1,40 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": false,
-    "allowJs": false,
-    "importHelpers": true,
-    "alwaysStrict": true,
-    "inlineSourceMap": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitAny": true,
-    "noImplicitThis": false,
-    "lib": [
-      "es2015",
-      "es2016",
-      "dom"
-    ],
-    "outDir": "../dist",
-    "strictNullChecks": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": false,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
-  "defaultSeverity": "error",
-  "parcel-plugin-typescript": {
-    // If true type-checking is disabled
-    "transpileOnly": false
-  },
-  "include": [
-    "src/**/*",
-    "webpack.config.js"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/index.ts", "src/metaball.ts", "src/common-types.ts", "src/vite-env.d.ts"]
 }
