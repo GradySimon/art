@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "description": "A portable catalog and gallery for browser-based artworks",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GradySimon/art.git"
+  },
   "exports": {
     ".": "./src/core/index.ts",
     "./astro": "./src/integration.ts",

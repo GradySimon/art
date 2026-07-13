@@ -17,7 +17,21 @@ npm run dev
 
 A workspace is any directory under `src/workspaces/**` that contains both a
 non-nested `workspace.yaml` and an `index.ts`. The index must export a `WORKS`
-array containing `Work` definitions.
+array containing `Work` values. `Work` is the complete public contract: its
+catalog metadata and the `mount()` operation live on the same object.
+
+```ts
+interface Work {
+  path: `works/${string}`;
+  title: string;
+  description: string;
+  date?: string;
+  provenance?: string;
+  tags?: readonly string[];
+  mount(container: HTMLElement, options?: WorkOptions):
+    ArtworkInstance | Promise<ArtworkInstance>;
+}
+```
 
 Every work has a workspace-relative path beginning with `works/`. Its full
 catalog path combines the workspace directory and work path:
@@ -88,6 +102,19 @@ instance.resume();
 instance.destroy();
 ```
 
-The package is private while its API is being established. Grady.io can consume
-it as a local workspace dependency now; publishing or moving both projects into
-one package-manager workspace can come later without changing the work API.
+The package is private while its API is being established. With `art` and
+`gradyio` checked out as sibling directories, Grady.io consumes the package
+directly from its repository root:
+
+```json
+{
+  "dependencies": {
+    "@grady/art": "file:../art"
+  }
+}
+```
+
+That local path is recorded by Grady.io's package manifest and Bun lockfile.
+For a checkout or deployment that does not have the sibling directory, replace
+the file dependency with a pinned Git commit, a tagged release, or a published
+package. None of those distribution choices changes the `Work` API.
