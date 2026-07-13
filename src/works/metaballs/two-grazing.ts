@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {twoGrazing} from "./scenes";
 
-export const {mount} = asWork(twoGrazing);
+export const {mount} = asWorkImplementation(twoGrazing);

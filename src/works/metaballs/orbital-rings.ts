@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {orbitalRings} from "./scenes";
 
-export const {mount} = asWork(orbitalRings);
+export const {mount} = asWorkImplementation(orbitalRings);

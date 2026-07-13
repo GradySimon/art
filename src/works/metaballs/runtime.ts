@@ -6,7 +6,7 @@ import {type Metaball, MetaballKind, type MetaballScene, type Vec2} from "./type
 
 const MAX_METABALLS = 100;
 
-export function asWork(sceneDefinition: MetaballScene): WorkImplementation {
+export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplementation {
   return {
     mount(container: HTMLElement, options: WorkOptions = {}): WorkInstance {
       const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});

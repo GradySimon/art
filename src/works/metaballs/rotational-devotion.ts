@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {rotationalDevotion} from "./scenes";
 
-export const {mount} = asWork(rotationalDevotion);
+export const {mount} = asWorkImplementation(rotationalDevotion);

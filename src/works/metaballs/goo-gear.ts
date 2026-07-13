@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {gooGear} from "./scenes";
 
-export const {mount} = asWork(gooGear);
+export const {mount} = asWorkImplementation(gooGear);

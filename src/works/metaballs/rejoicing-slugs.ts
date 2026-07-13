@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {rejoicingSlugs} from "./scenes";
 
-export const {mount} = asWork(rejoicingSlugs);
+export const {mount} = asWorkImplementation(rejoicingSlugs);

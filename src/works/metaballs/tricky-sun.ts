@@ -1,4 +1,4 @@
-import {asWork} from "./runtime";
+import {asWorkImplementation} from "./runtime";
 import {trickySun} from "./scenes";
 
-export const {mount} = asWork(trickySun);
+export const {mount} = asWorkImplementation(trickySun);
