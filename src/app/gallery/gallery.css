@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Manrope:wght@400;500&display=swap");
+
+:root {
+  color: #191a18;
+  background: #e8e5df;
+  font-family: "Manrope", sans-serif;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, select { font: inherit; }
+
+.gallery {
+  min-height: 100svh;
+  padding: clamp(18px, 3vw, 44px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 52px);
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 32px;
+}
+
+.eyebrow, .work-caption, .work-picker {
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow { margin: 0 0 9px; color: #65675f; }
+h1 {
+  margin: 0;
+  font-weight: 400;
+  font-size: clamp(42px, 7vw, 98px);
+  line-height: 0.82;
+  letter-spacing: -0.07em;
+}
+
+.work-picker { display: flex; align-items: end; gap: 8px; }
+.work-picker label { display: grid; gap: 7px; }
+.work-picker label span { color: #65675f; }
+.work-picker button, .work-picker select {
+  height: 39px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #a9aaa3;
+}
+.work-picker button { width: 39px; border-radius: 50%; cursor: pointer; }
+.work-picker button:hover { color: #eeece7; background: #191a18; border-color: #191a18; }
+.work-picker select {
+  min-width: min(360px, 52vw);
+  padding: 0 36px 0 12px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.work-shell {
+  min-height: 420px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+art-work {
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #bdbdb5;
+  background: #e3e1dc;
+}
+
+.work-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 24px;
+  color: #65675f;
+}
+
+.work-description {
+  width: min(760px, 78vw);
+  display: grid;
+  grid-template-columns: minmax(120px, .75fr) minmax(240px, 1.6fr) minmax(180px, 1fr) minmax(120px, .7fr);
+  gap: 20px;
+}
+.work-description strong { color: #191a18; font-weight: 400; }
+
+@media (max-width: 760px) {
+  .masthead { align-items: start; flex-direction: column; }
+  .work-picker { width: 100%; }
+  .work-picker label { min-width: 0; flex: 1; }
+  .work-picker select { width: 100%; min-width: 0; }
+  .work-caption { flex-direction: column; gap: 5px; }
+  .work-description { width: 100%; grid-template-columns: 1fr; gap: 5px; }
+  .work-shell { min-height: 58svh; }
+}

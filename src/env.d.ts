@@ -1,4 +1,4 @@
-/// <reference types="vite/client" />
+/// <reference types="astro/client" />
 
 declare module "*.frag?raw" {
   const source: string;

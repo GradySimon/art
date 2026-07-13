@@ -1,20 +1,36 @@
 {
-  "name": "metaball",
-  "version": "2.0.0",
+  "name": "@grady/art",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "A portable catalog and gallery for browser-based artworks",
+  "exports": {
+    ".": "./src/core/index.ts",
+    "./WorkPlayer.astro": "./src/components/WorkPlayer.astro",
+    "./runtime": "./src/runtime/index.ts",
+    "./workspaces/*": "./src/workspaces/*/index.ts"
+  },
+  "files": [
+    "src",
+    "astro.config.mjs"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "check": "tsc --noEmit"
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "check": "astro check",
+    "preview": "astro preview"
   },
   "dependencies": {
     "three": "^0.185.1"
   },
+  "peerDependencies": {
+    "astro": "^5.18.0"
+  },
   "devDependencies": {
+    "@astrojs/check": "^0.9.6",
     "@types/three": "^0.185.1",
-    "typescript": "^7.0.2",
-    "vite": "^8.1.4"
+    "astro": "^5.18.0",
+    "typescript": "^5.9.3",
+    "yaml": "^2.8.2"
   }
 }

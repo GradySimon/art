@@ -1,9 +1,8 @@
-# Metaball
+# Art
 
-A browser for the generative studies preserved in the original 2019–2020
-Three.js metaball history.
+A portable catalog and Astro gallery for browser-based artworks.
 
-## Run it
+## Run the built-in gallery
 
 Requires Node.js 22.12 or newer.
 
@@ -12,26 +11,58 @@ npm install
 npm run dev
 ```
 
-Then open the local URL printed by Vite. Use the selector, arrow buttons, or
-left/right arrow keys to browse studies. The spacebar pauses or resumes the
-animation. Each study includes its source commit and provenance in the caption.
+`npm run build` type-checks and produces a static gallery in `dist/`.
 
-## Validate a change
+## Workspaces and works
 
-```sh
-npm run check
-npm run build
+A workspace is any directory under `src/workspaces/**` that contains both a
+non-nested `workspace.yaml` and an `index.ts`. The index must export a `WORKS`
+array containing `Work` definitions.
+
+Every work has a workspace-relative path beginning with `works/`. Its full
+catalog path combines the workspace directory and work path:
+
+```text
+metaball-studies/works/rejoicing-slugs
 ```
 
-## Project shape
+The built-in gallery discovers these workspaces at build time. It is only one
+consumer of the catalog and has no knowledge of individual renderers.
 
-- `src/index.ts` owns the Three.js renderer and the interactive studies.
-- `src/studies.ts` ports the historical compositions and records provenance.
-- `src/metaball.ts` contains the original metaball types and composition helpers.
-- `src/shader/` contains the original GLSL field renderer.
-- `src/orbit-world.ts` and `src/rl.ts` preserve the experimental TensorFlow.js
-  reinforcement-learning orbit simulation. They are not part of the current
-  build because they depend on private APIs from the 2019 TensorFlow.js runtime.
+Each `WORKS` entry uses `lazyWork()`. Its implementation and dependencies are
+loaded only when the work mounts. Keep renderer-specific or unusually large
+dependencies inside the dynamically imported work module, not the workspace
+index. Different works may use entirely different rendering libraries.
 
-The `modernize-2026` branch begins at the untouched 2020 project state, so its
-first modernization commit can always be inspected or reverted independently.
+## Import into another Astro site
+
+The package exports its core types, workspace entry points, runtime, and an
+Astro player component. In an Astro page or MDX file:
+
+```astro
+---
+import WorkPlayer from "@grady/art/WorkPlayer.astro";
+---
+
+<WorkPlayer
+  work="metaball-studies/works/rejoicing-slugs"
+  aspectRatio={1.4}
+  label="Rejoicing Slugs"
+/>
+```
+
+For direct programmatic use with the narrowest possible import surface:
+
+```ts
+import {WORKS} from "@grady/art/workspaces/metaball-studies";
+
+const work = WORKS.find(({path}) => path === "works/rejoicing-slugs");
+const instance = await work.mount(container);
+instance.pause();
+instance.resume();
+instance.destroy();
+```
+
+The package is private while its API is being established. Grady.io can consume
+it as a local workspace dependency now; publishing or moving both projects into
+one package-manager workspace can come later without changing the work API.

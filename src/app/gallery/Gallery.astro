@@ -1,0 +1,60 @@
+---
+import {discoverCatalog} from "../../runtime/discover";
+import WorkPlayer from "../../components/WorkPlayer.astro";
+import "./gallery.css";
+
+const catalog = await discoverCatalog();
+if (catalog.length === 0) throw new Error("No works were discovered");
+const initial = catalog[0];
+---
+
+<main class="gallery">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Art workspaces</p>
+      <h1>Works</h1>
+    </div>
+    <div class="work-picker">
+      <button data-previous aria-label="Previous work">←</button>
+      <label>
+        <span>Choose a work</span>
+        <select data-work-select>
+          {catalog.map((work, index) => (
+            <option
+              value={work.fullPath}
+              data-title={work.title}
+              data-description={work.description}
+              data-provenance={work.provenance ?? ""}
+              data-workspace={work.workspaceTitle}
+            >
+              {String(index + 1).padStart(2, "0")} — {work.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button data-next aria-label="Next work">→</button>
+    </div>
+  </header>
+
+  <section class="work-shell" aria-label="Selected artwork">
+    <WorkPlayer
+      work={initial.fullPath}
+      class="gallery-player"
+      data-gallery-player
+      label={initial.title}
+    />
+    <div class="work-caption">
+      <span data-work-number>01 / {String(catalog.length).padStart(2, "0")}</span>
+      <div class="work-description">
+        <strong data-work-title>{initial.title}</strong>
+        <span data-work-note>{initial.description}</span>
+        <span data-work-provenance>{initial.provenance}</span>
+        <span data-workspace>{initial.workspaceTitle}</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  import "./gallery-client";
+</script>

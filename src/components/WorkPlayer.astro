@@ -1,0 +1,46 @@
+---
+interface Props {
+  work: string;
+  aspectRatio?: number;
+  class?: string;
+  label?: string;
+  [attribute: string]: unknown;
+}
+
+const {
+  work,
+  aspectRatio,
+  class: className,
+  label = "Interactive artwork",
+  ...attributes
+} = Astro.props;
+---
+
+<art-work
+  {...attributes}
+  work={work}
+  class:list={["art-work-player", className]}
+  style={aspectRatio ? `aspect-ratio: ${aspectRatio}` : undefined}
+  role="img"
+  aria-label={label}
+></art-work>
+
+<script>
+  import "../runtime/player-element";
+</script>
+
+<style>
+  .art-work-player {
+    display: block;
+    width: 100%;
+    min-height: 240px;
+    overflow: hidden;
+    background: #e3e1dc;
+  }
+
+  .art-work-player[data-state="error"] {
+    padding: 1rem;
+    font: 0.875rem/1.5 monospace;
+    color: #8a241f;
+  }
+</style>
