@@ -1,22 +1,38 @@
-const WORKSPACES_MARKER = "/workspaces/";
+import type {WorkPath} from "../core";
+
+const WORKS_MARKER = "/works/";
+const WORK_ROUTE_PREFIX = "works/";
 
 export function workspacePathFromFile(file: string, fileName: string): string {
-  const markerIndex = file.lastIndexOf(WORKSPACES_MARKER);
+  const markerIndex = file.lastIndexOf(WORKS_MARKER);
   if (markerIndex < 0 || !file.endsWith(`/${fileName}`)) {
     throw new Error(`Unexpected workspace file path: ${file}`);
   }
-  return file.slice(markerIndex + WORKSPACES_MARKER.length, -(`/${fileName}`.length));
+  return file.slice(markerIndex + WORKS_MARKER.length, -(`/${fileName}`.length));
 }
 
-export function splitFullWorkPath(fullPath: string): {
+export function fullWorkPath(workspacePath: string, workPath: string): WorkPath {
+  return `${WORK_ROUTE_PREFIX}${workspacePath}/${workPath}`;
+}
+
+export function galleryWorkPath(fullPath: WorkPath): string {
+  return fullPath.slice(WORK_ROUTE_PREFIX.length);
+}
+
+export function resolveWorkPath(fullPath: string, workspacePaths: Iterable<string>): {
   workspacePath: string;
-  workPath: `works/${string}`;
+  workPath: string;
 } {
-  const marker = "/works/";
-  const markerIndex = fullPath.lastIndexOf(marker);
-  if (markerIndex <= 0) throw new Error(`Invalid work path: ${fullPath}`);
+  if (!fullPath.startsWith(WORK_ROUTE_PREFIX)) {
+    throw new Error(`Invalid work path: ${fullPath}`);
+  }
+  const relativePath = fullPath.slice(WORK_ROUTE_PREFIX.length);
+  const workspacePath = [...workspacePaths]
+    .filter((candidate) => relativePath.startsWith(`${candidate}/`))
+    .sort((left, right) => right.length - left.length)[0];
+  if (!workspacePath) throw new Error(`Unknown workspace for work: ${fullPath}`);
   return {
-    workspacePath: fullPath.slice(0, markerIndex),
-    workPath: `works/${fullPath.slice(markerIndex + marker.length)}`,
+    workspacePath,
+    workPath: relativePath.slice(workspacePath.length + 1),
   };
 }

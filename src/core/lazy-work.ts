@@ -1,11 +1,11 @@
-import type {Work} from "./work";
+import type {Work, WorkImplementation, WorkMetadata} from "./work";
 
 export function lazyWork(
-  definition: Omit<Work, "mount">,
-  load: () => Promise<Pick<Work, "mount">>,
+  metadata: WorkMetadata,
+  load: () => Promise<WorkImplementation>,
 ): Work {
   return {
-    ...definition,
+    ...metadata,
     async mount(container, options) {
       const implementation = await load();
       return implementation.mount(container, options);

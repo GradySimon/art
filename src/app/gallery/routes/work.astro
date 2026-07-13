@@ -1,5 +1,6 @@
 ---
 import {discoverCatalog} from "../../../runtime/discover";
+import type {WorkPath} from "../../../core";
 import GalleryPage from "../GalleryPage.astro";
 import {galleryWorkPath} from "../gallery-route";
 
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-  initialWork: string;
+  initialWork: WorkPath;
 }
 
 const {initialWork} = Astro.props;

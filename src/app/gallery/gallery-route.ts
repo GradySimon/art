@@ -1,11 +1,11 @@
-import {splitFullWorkPath} from "../../runtime/workspace-path";
+import type {WorkPath} from "../../core";
+import {galleryWorkPath as pathWithinGallery} from "../../runtime/workspace-path";
 
-export function galleryWorkPath(fullPath: string): string {
-  const {workspacePath, workPath} = splitFullWorkPath(fullPath);
-  return `${workspacePath}/${workPath.slice("works/".length)}`;
+export function galleryWorkPath(fullPath: WorkPath): string {
+  return pathWithinGallery(fullPath);
 }
 
-export function galleryWorkHref(fullPath: string, basePath = "/works"): string {
+export function galleryWorkHref(fullPath: WorkPath, basePath = "/works"): string {
   const normalizedBasePath = `/${basePath.replace(/^\/+|\/+$/g, "")}`;
   return `${normalizedBasePath}/${galleryWorkPath(fullPath)}`;
 }

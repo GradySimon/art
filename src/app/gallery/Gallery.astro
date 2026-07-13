@@ -1,11 +1,12 @@
 ---
 import {discoverCatalog} from "../../runtime/discover";
+import type {WorkPath} from "../../core";
 import WorkPlayer from "../../components/WorkPlayer.astro";
 import {galleryWorkHref} from "./gallery-route";
 import "./gallery.css";
 
 interface Props {
-  initialWork?: string;
+  initialWork?: WorkPath;
   basePath?: string;
 }
 
@@ -54,7 +55,7 @@ const initial = catalog[initialIndex];
     </div>
   </header>
 
-  <section class="work-shell" aria-label="Selected artwork">
+  <section class="work-shell" aria-label="Selected work">
     <WorkPlayer
       work={initial.fullPath}
       class="gallery-player"

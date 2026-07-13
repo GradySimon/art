@@ -1,8 +1,9 @@
 ---
 import Gallery from "./Gallery.astro";
+import type {WorkPath} from "../../core";
 
 interface Props {
-  initialWork?: string;
+  initialWork?: WorkPath;
   workBasePath: string;
 }
 
@@ -15,7 +16,7 @@ const {initialWork, workBasePath} = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#e8e5df" />
-    <meta name="description" content="A portable catalog of browser-based artworks" />
+    <meta name="description" content="A portable catalog of browser-based works" />
     <title>Works</title>
   </head>
   <body>

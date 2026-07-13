@@ -1,6 +1,6 @@
 import type {CatalogWork, WorkspaceModule} from "../core";
 import {parse} from "yaml";
-import {workspacePathFromFile} from "./workspace-path";
+import {fullWorkPath, workspacePathFromFile} from "./workspace-path";
 
 interface WorkspaceManifest {
   title: string;
@@ -8,12 +8,12 @@ interface WorkspaceManifest {
   order?: number;
 }
 
-const manifests = import.meta.glob<string>("../workspaces/**/workspace.yaml", {
+const manifests = import.meta.glob<string>("../works/**/workspace.yaml", {
   eager: true,
   query: "?raw",
   import: "default",
 });
-const modules = import.meta.glob<WorkspaceModule>("../workspaces/**/index.ts");
+const modules = import.meta.glob<WorkspaceModule>("../works/**/index.ts");
 
 export async function discoverCatalog(): Promise<CatalogWork[]> {
   const moduleLoaders = new Map(
@@ -41,10 +41,9 @@ export async function discoverCatalog(): Promise<CatalogWork[]> {
       (right.manifest.order ?? Number.MAX_SAFE_INTEGER),
     )
     .flatMap(({workspacePath, manifest, works}) =>
-      works.map((work) => ({
-        ...work,
-        mount: undefined,
-        fullPath: `${workspacePath}/${work.path}`,
+      works.map(({mount: _mount, ...metadata}) => ({
+        ...metadata,
+        fullPath: fullWorkPath(workspacePath, metadata.path),
         workspacePath,
         workspaceTitle: manifest.title,
       })),

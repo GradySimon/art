@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A portable catalog and gallery for browser-based artworks",
+  "description": "A portable catalog and gallery for browser-based works",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GradySimon/art.git"
@@ -16,7 +16,7 @@
     "./gallery": "./src/app/gallery/gallery-route.ts",
     "./WorkPlayer.astro": "./src/components/WorkPlayer.astro",
     "./runtime": "./src/runtime/index.ts",
-    "./workspaces/*": "./src/workspaces/*/index.ts"
+    "./works/*": "./src/works/*/index.ts"
   },
   "files": [
     "src",

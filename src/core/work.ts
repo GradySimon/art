@@ -4,32 +4,37 @@ export interface WorkOptions {
   paused?: boolean;
 }
 
-export interface ArtworkInstance {
+export interface WorkInstance {
   pause(): void;
   resume(): void;
   resize(): void;
   destroy(): void;
 }
 
-export interface Work {
-  path: WorkPath;
+export interface WorkMetadata {
+  path: string;
   title: string;
   description: string;
   date?: string;
   provenance?: string;
   tags?: readonly string[];
+}
+
+export interface WorkImplementation {
   mount(
     container: HTMLElement,
     options?: WorkOptions,
-  ): ArtworkInstance | Promise<ArtworkInstance>;
+  ): WorkInstance | Promise<WorkInstance>;
 }
+
+export type Work = WorkMetadata & WorkImplementation;
 
 export interface WorkspaceModule {
   WORKS: readonly Work[];
 }
 
-export interface CatalogWork extends Omit<Work, "mount"> {
-  fullPath: string;
+export interface CatalogWork extends WorkMetadata {
+  fullPath: WorkPath;
   workspacePath: string;
   workspaceTitle: string;
 }

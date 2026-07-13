@@ -1,8 +1,10 @@
 export { lazyWork } from "./lazy-work";
 export type {
-  ArtworkInstance,
   CatalogWork,
   Work,
+  WorkImplementation,
+  WorkInstance,
+  WorkMetadata,
   WorkOptions,
   WorkPath,
   WorkspaceModule,

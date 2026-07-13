@@ -1,6 +1,8 @@
 ---
+import type {WorkPath} from "../core";
+
 interface Props {
-  work: string;
+  work: WorkPath;
   aspectRatio?: number;
   class?: string;
   label?: string;
@@ -11,26 +13,26 @@ const {
   work,
   aspectRatio,
   class: className,
-  label = "Interactive artwork",
+  label = "Interactive work",
   ...attributes
 } = Astro.props;
 ---
 
-<art-work
+<work-player
   {...attributes}
   work={work}
-  class:list={["art-work-player", className]}
+  class:list={["work-player", className]}
   style={aspectRatio ? `aspect-ratio: ${aspectRatio}` : undefined}
   role="img"
   aria-label={label}
-></art-work>
+></work-player>
 
 <script>
   import "../runtime/player-element";
 </script>
 
 <style>
-  .art-work-player {
+  .work-player {
     display: block;
     width: 100%;
     min-height: 240px;
@@ -38,7 +40,7 @@ const {
     background: #e3e1dc;
   }
 
-  .art-work-player[data-state="error"] {
+  .work-player[data-state="error"] {
     padding: 1rem;
     font: 0.875rem/1.5 monospace;
     color: #8a241f;

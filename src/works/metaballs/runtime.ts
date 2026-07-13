@@ -1,14 +1,14 @@
 import * as THREE from "three";
-import type {ArtworkInstance, Work, WorkOptions} from "../../core";
+import type {WorkImplementation, WorkInstance, WorkOptions} from "../../core";
 import fragmentShader from "./shaders/metaball.frag?raw";
 import vertexShader from "./shaders/metaball.vert?raw";
 import {type Metaball, MetaballKind, type MetaballScene, type Vec2} from "./types";
 
 const MAX_METABALLS = 100;
 
-export function implementationFor(sceneDefinition: MetaballScene): Pick<Work, "mount"> {
+export function asWork(sceneDefinition: MetaballScene): WorkImplementation {
   return {
-    mount(container: HTMLElement, options: WorkOptions = {}): ArtworkInstance {
+    mount(container: HTMLElement, options: WorkOptions = {}): WorkInstance {
       const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.domElement.style.display = "block";

@@ -1,11 +1,11 @@
 import type {Work, WorkspaceModule} from "../core";
-import {splitFullWorkPath, workspacePathFromFile} from "./workspace-path";
+import {resolveWorkPath, workspacePathFromFile} from "./workspace-path";
 
 const workspaceModules = import.meta.glob<WorkspaceModule>(
-  "../workspaces/**/index.ts",
+  "../works/**/index.ts",
 );
 const workspaceManifests = import.meta.glob(
-  "../workspaces/**/workspace.yaml",
+  "../works/**/workspace.yaml",
   {eager: true, query: "?raw", import: "default"},
 );
 
@@ -22,7 +22,7 @@ const loaders = new Map(
 );
 
 export async function loadWork(fullPath: string): Promise<Work> {
-  const {workspacePath, workPath} = splitFullWorkPath(fullPath);
+  const {workspacePath, workPath} = resolveWorkPath(fullPath, loaders.keys());
   const loadWorkspace = loaders.get(workspacePath);
   if (!loadWorkspace) throw new Error(`Unknown workspace: ${workspacePath}`);
   const workspace = await loadWorkspace();

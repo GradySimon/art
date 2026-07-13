@@ -1,2 +1,2 @@
 export {loadWork} from "./registry";
-export {ArtWorkElement} from "./player-element";
+export {WorkElement} from "./player-element";

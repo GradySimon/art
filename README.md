@@ -1,6 +1,6 @@
 # Art
 
-A portable catalog and Astro gallery for browser-based artworks.
+A portable catalog and Astro gallery for browser-based works.
 
 ## Run the built-in gallery
 
@@ -15,41 +15,50 @@ npm run dev
 
 ## Workspaces and works
 
-A workspace is any directory under `src/workspaces/**` that contains both a
+A workspace is any directory under `src/works/**` that contains both a
 non-nested `workspace.yaml` and an `index.ts`. The index must export a `WORKS`
-array containing `Work` values. `Work` is the complete public contract: its
-catalog metadata and the `mount()` operation live on the same object.
+array containing `Work` values. `Work` combines catalog metadata with the
+implementation that mounts it.
 
 ```ts
-interface Work {
-  path: `works/${string}`;
+interface WorkMetadata {
+  path: string;
   title: string;
   description: string;
   date?: string;
   provenance?: string;
   tags?: readonly string[];
-  mount(container: HTMLElement, options?: WorkOptions):
-    ArtworkInstance | Promise<ArtworkInstance>;
 }
+
+interface WorkImplementation {
+  mount(container: HTMLElement, options?: WorkOptions):
+    WorkInstance | Promise<WorkInstance>;
+}
+
+type Work = WorkMetadata & WorkImplementation;
 ```
 
-Every work has a workspace-relative path beginning with `works/`. Its full
-catalog path combines the workspace directory and work path:
+Every work has a path relative to its workspace. Its full identity mirrors its
+source path beneath `src/`:
 
 ```text
-metaballs/works/rejoicing-slugs
+source module:   src/works/metaballs/rejoicing-slugs.ts
+workspace path:  metaballs
+work path:       rejoicing-slugs
+full identity:   works/metaballs/rejoicing-slugs
+gallery URL:     /works/metaballs/rejoicing-slugs
 ```
 
 The built-in gallery discovers these workspaces at build time. It is only one
 consumer of the catalog and has no knowledge of individual renderers.
 
-Gallery URLs put the workspace path beneath `/works/`, followed by the work's
-path relative to its workspace. Nested workspace and work paths are preserved:
+Nested workspace and work paths are preserved:
 
 ```text
 /works/metaballs/rejoicing-slugs
 
-collections/fields/works/series/blue
+src/works/collections/fields/series/blue.ts
+→ works/collections/fields/series/blue
 → /works/collections/fields/series/blue
 ```
 
@@ -57,6 +66,18 @@ Each `WORKS` entry uses `lazyWork()`. Its implementation and dependencies are
 loaded only when the work mounts. Keep renderer-specific or unusually large
 dependencies inside the dynamically imported work module, not the workspace
 index. Different works may use entirely different rendering libraries.
+
+## When discovery runs
+
+`src/runtime/discover.ts` is server/build code. Vite expands its
+`import.meta.glob()` expressions when it transforms the module. Astro calls
+`discoverCatalog()` while rendering the gallery and while `getStaticPaths()`
+enumerates work pages. In development that happens in the Astro dev server; in
+a production build it happens during `astro build`. It does not run in the
+browser. Workspace manifests are loaded eagerly when the discovery module is
+evaluated, while workspace modules remain loaders until `discoverCatalog()`
+calls them. Individual work modules remain behind their own dynamic imports
+until a `Work` is mounted in the browser.
 
 ## Import into another Astro site
 
@@ -69,7 +90,7 @@ import WorkPlayer from "@grady/art/WorkPlayer.astro";
 ---
 
 <WorkPlayer
-  work="metaballs/works/rejoicing-slugs"
+  work="works/metaballs/rejoicing-slugs"
   aspectRatio={1.4}
   label="Rejoicing Slugs"
 />
@@ -93,9 +114,9 @@ The host does not define or coordinate the gallery's internal routes.
 For direct programmatic use with the narrowest possible import surface:
 
 ```ts
-import {WORKS} from "@grady/art/workspaces/metaballs";
+import {WORKS} from "@grady/art/works/metaballs";
 
-const work = WORKS.find(({path}) => path === "works/rejoicing-slugs");
+const work = WORKS.find(({path}) => path === "rejoicing-slugs");
 const instance = await work.mount(container);
 instance.pause();
 instance.resume();

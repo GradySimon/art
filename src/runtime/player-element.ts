@@ -1,10 +1,10 @@
-import type {ArtworkInstance} from "../core";
+import type {WorkInstance} from "../core";
 import {loadWork} from "./registry";
 
-export class ArtWorkElement extends HTMLElement {
+export class WorkElement extends HTMLElement {
   static observedAttributes = ["work"];
 
-  #instance?: ArtworkInstance;
+  #instance?: WorkInstance;
   #generation = 0;
   #resizeObserver = new ResizeObserver(() => this.#instance?.resize());
 
@@ -47,11 +47,11 @@ export class ArtWorkElement extends HTMLElement {
     } catch (error) {
       if (generation !== this.#generation) return;
       this.dataset.state = "error";
-      this.textContent = error instanceof Error ? error.message : "Unable to load artwork";
+      this.textContent = error instanceof Error ? error.message : "Unable to load work";
     }
   }
 }
 
-if (!customElements.get("art-work")) {
-  customElements.define("art-work", ArtWorkElement);
+if (!customElements.get("work-player")) {
+  customElements.define("work-player", WorkElement);
 }
