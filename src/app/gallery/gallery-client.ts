@@ -13,7 +13,7 @@ if (window.location.hash) {
 }
 
 function pathFromLocation(): string {
-  return decodeURIComponent(window.location.pathname.replace(/^\/+|\/+$/g, ""));
+  return decodeURIComponent(window.location.pathname.replace(/\/+$/g, "")) || "/";
 }
 
 function show(index: number, pushHistory = false): void {
@@ -28,7 +28,7 @@ function show(index: number, pushHistory = false): void {
   document.querySelector("[data-work-note]")!.textContent = option.dataset.description ?? "";
   document.querySelector("[data-work-provenance]")!.textContent = option.dataset.provenance ?? "";
   document.querySelector("[data-workspace]")!.textContent = option.dataset.workspace ?? "";
-  if (pushHistory) window.history.pushState({}, "", `/${option.value}`);
+  if (pushHistory) window.history.pushState({}, "", option.dataset.href);
 }
 
 select.addEventListener("change", () => show(select.selectedIndex, true));
@@ -43,13 +43,15 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("popstate", () => {
   const requestedPath = pathFromLocation();
   const requestedIndex = Array.from(select.options).findIndex(
-    (option) => option.value === requestedPath,
+    (option) => option.dataset.href === requestedPath,
   );
   show(requestedIndex >= 0 ? requestedIndex : 0);
 });
 
-const requestedPath = pathFromLocation() || gallery.dataset.initialWork || "";
+const requestedPath = pathFromLocation() === "/"
+  ? gallery.dataset.initialHref ?? ""
+  : pathFromLocation();
 const requestedIndex = Array.from(select.options).findIndex(
-  (option) => option.value === requestedPath,
+  (option) => option.dataset.href === requestedPath,
 );
 show(requestedIndex >= 0 ? requestedIndex : select.selectedIndex);

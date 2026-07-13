@@ -1,11 +1,12 @@
 ---
-import Gallery from "../app/gallery/Gallery.astro";
-import {discoverCatalog} from "../runtime/discover";
+import Gallery from "../../app/gallery/Gallery.astro";
+import {galleryWorkPath} from "../../app/gallery/gallery-route";
+import {discoverCatalog} from "../../runtime/discover";
 
 export async function getStaticPaths() {
   const catalog = await discoverCatalog();
   return catalog.map(({fullPath}) => ({
-    params: {work: fullPath},
+    params: {path: galleryWorkPath(fullPath)},
     props: {initialWork: fullPath},
   }));
 }

@@ -29,6 +29,16 @@ metaballs/works/rejoicing-slugs
 The built-in gallery discovers these workspaces at build time. It is only one
 consumer of the catalog and has no knowledge of individual renderers.
 
+Gallery URLs put the workspace path beneath `/works/`, followed by the work's
+path relative to its workspace. Nested workspace and work paths are preserved:
+
+```text
+/works/metaballs/rejoicing-slugs
+
+collections/fields/works/series/blue
+→ /works/collections/fields/series/blue
+```
+
 Each `WORKS` entry uses `lazyWork()`. Its implementation and dependencies are
 loaded only when the work mounts. Keep renderer-specific or unusually large
 dependencies inside the dynamically imported work module, not the workspace
