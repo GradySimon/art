@@ -154,6 +154,20 @@ const historicalStudies: Study[] = [
       ...ring(elapsed + 3000, 8, { period: 48000, radius: 0.81 }, 0.06, MetaballKind.NEG_QUADRATIC),
     ],
   },
+  {
+    id: "orbital-rings",
+    title: "Orbital Rings",
+    note: "A February 2020 variation on Tricky Sun, with a slowly breathing central field.",
+    provenance: "Historical variation · Feb 8, 2020 · 870ecec",
+    render: ({ elapsed }) => [
+      center(0.375 + Math.sin((elapsed * Math.PI * 2) / 24000) * 0.075),
+      center(0.52, MetaballKind.ZERO),
+      ...ring(elapsed, 8, { period: 96000, radius: 0.73 }, 0.06, MetaballKind.NEG_QUADRATIC),
+      ...ring(elapsed, 8, { period: -48000, radius: 0.77 }, 0.055),
+      ...ring(elapsed + 3000, 8, { period: -48000, radius: 0.77 }, 0.055),
+      ...ring(elapsed + 3000, 8, { period: 48000, radius: 0.81 }, 0.06, MetaballKind.NEG_QUADRATIC),
+    ],
+  },
 ];
 
 function orbiters(elapsed: number): Metaball[] {
