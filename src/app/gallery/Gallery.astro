@@ -3,12 +3,21 @@ import {discoverCatalog} from "../../runtime/discover";
 import WorkPlayer from "../../components/WorkPlayer.astro";
 import "./gallery.css";
 
+interface Props {
+  initialWork?: string;
+}
+
 const catalog = await discoverCatalog();
 if (catalog.length === 0) throw new Error("No works were discovered");
-const initial = catalog[0];
+const requestedInitial = Astro.props.initialWork;
+const initialIndex = requestedInitial
+  ? catalog.findIndex(({fullPath}) => fullPath === requestedInitial)
+  : 0;
+if (initialIndex < 0) throw new Error(`Unknown initial work: ${requestedInitial}`);
+const initial = catalog[initialIndex];
 ---
 
-<main class="gallery">
+<main class="gallery" data-gallery data-initial-work={initial.fullPath}>
   <header class="masthead">
     <div>
       <p class="eyebrow">Art workspaces</p>
@@ -22,6 +31,7 @@ const initial = catalog[0];
           {catalog.map((work, index) => (
             <option
               value={work.fullPath}
+              selected={index === initialIndex}
               data-title={work.title}
               data-description={work.description}
               data-provenance={work.provenance ?? ""}
@@ -44,7 +54,9 @@ const initial = catalog[0];
       label={initial.title}
     />
     <div class="work-caption">
-      <span data-work-number>01 / {String(catalog.length).padStart(2, "0")}</span>
+      <span data-work-number>
+        {String(initialIndex + 1).padStart(2, "0")} / {String(catalog.length).padStart(2, "0")}
+      </span>
       <div class="work-description">
         <strong data-work-title>{initial.title}</strong>
         <span data-work-note>{initial.description}</span>

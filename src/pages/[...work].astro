@@ -1,0 +1,32 @@
+---
+import Gallery from "../app/gallery/Gallery.astro";
+import {discoverCatalog} from "../runtime/discover";
+
+export async function getStaticPaths() {
+  const catalog = await discoverCatalog();
+  return catalog.map(({fullPath}) => ({
+    params: {work: fullPath},
+    props: {initialWork: fullPath},
+  }));
+}
+
+interface Props {
+  initialWork: string;
+}
+
+const {initialWork} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#e8e5df" />
+    <meta name="description" content="A portable catalog of browser-based artworks" />
+    <title>Works</title>
+  </head>
+  <body>
+    <Gallery initialWork={initialWork} />
+  </body>
+</html>

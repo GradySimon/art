@@ -2,12 +2,21 @@ const select = document.querySelector<HTMLSelectElement>("[data-work-select]");
 const player = document.querySelector<HTMLElement>("[data-gallery-player]");
 const previous = document.querySelector<HTMLButtonElement>("[data-previous]");
 const next = document.querySelector<HTMLButtonElement>("[data-next]");
+const gallery = document.querySelector<HTMLElement>("[data-gallery]");
 
-if (!select || !player || !previous || !next) {
+if (!select || !player || !previous || !next || !gallery) {
   throw new Error("Gallery controls are incomplete");
 }
 
-function show(index: number): void {
+if (window.location.hash) {
+  window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+}
+
+function pathFromLocation(): string {
+  return decodeURIComponent(window.location.pathname.replace(/^\/+|\/+$/g, ""));
+}
+
+function show(index: number, pushHistory = false): void {
   const count = select!.options.length;
   const normalized = (index + count) % count;
   select!.selectedIndex = normalized;
@@ -19,20 +28,28 @@ function show(index: number): void {
   document.querySelector("[data-work-note]")!.textContent = option.dataset.description ?? "";
   document.querySelector("[data-work-provenance]")!.textContent = option.dataset.provenance ?? "";
   document.querySelector("[data-workspace]")!.textContent = option.dataset.workspace ?? "";
-  window.location.hash = option.value;
+  if (pushHistory) window.history.pushState({}, "", `/${option.value}`);
 }
 
-select.addEventListener("change", () => show(select.selectedIndex));
-previous.addEventListener("click", () => show(select.selectedIndex - 1));
-next.addEventListener("click", () => show(select.selectedIndex + 1));
+select.addEventListener("change", () => show(select.selectedIndex, true));
+previous.addEventListener("click", () => show(select.selectedIndex - 1, true));
+next.addEventListener("click", () => show(select.selectedIndex + 1, true));
 window.addEventListener("keydown", (event) => {
-  if (event.code === "ArrowLeft") show(select.selectedIndex - 1);
-  if (event.code === "ArrowRight") show(select.selectedIndex + 1);
+  if (event.code === "ArrowLeft") show(select.selectedIndex - 1, true);
+  if (event.code === "ArrowRight") show(select.selectedIndex + 1, true);
   if (["ArrowLeft", "ArrowRight"].includes(event.code)) event.preventDefault();
 });
 
-const requestedPath = decodeURIComponent(window.location.hash.slice(1));
+window.addEventListener("popstate", () => {
+  const requestedPath = pathFromLocation();
+  const requestedIndex = Array.from(select.options).findIndex(
+    (option) => option.value === requestedPath,
+  );
+  show(requestedIndex >= 0 ? requestedIndex : 0);
+});
+
+const requestedPath = pathFromLocation() || gallery.dataset.initialWork || "";
 const requestedIndex = Array.from(select.options).findIndex(
   (option) => option.value === requestedPath,
 );
-show(requestedIndex >= 0 ? requestedIndex : 0);
+show(requestedIndex >= 0 ? requestedIndex : select.selectedIndex);
