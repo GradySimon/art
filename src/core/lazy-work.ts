@@ -1,12 +1,8 @@
-import type {
-  ArtworkDefinition,
-  Work,
-  WorkImplementation,
-} from "./work";
+import type {Work} from "./work";
 
 export function lazyWork(
-  definition: ArtworkDefinition,
-  load: () => Promise<WorkImplementation>,
+  definition: Omit<Work, "mount">,
+  load: () => Promise<Pick<Work, "mount">>,
 ): Work {
   return {
     ...definition,

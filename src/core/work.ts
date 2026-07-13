@@ -11,31 +11,24 @@ export interface ArtworkInstance {
   destroy(): void;
 }
 
-export interface ArtworkDefinition {
+export interface Work {
   path: WorkPath;
   title: string;
   description: string;
   date?: string;
   provenance?: string;
   tags?: readonly string[];
-}
-
-export interface Work extends ArtworkDefinition {
   mount(
     container: HTMLElement,
     options?: WorkOptions,
   ): ArtworkInstance | Promise<ArtworkInstance>;
 }
 
-export interface WorkImplementation {
-  mount: Work["mount"];
-}
-
 export interface WorkspaceModule {
   WORKS: readonly Work[];
 }
 
-export interface CatalogWork extends ArtworkDefinition {
+export interface CatalogWork extends Omit<Work, "mount"> {
   fullPath: string;
   workspacePath: string;
   workspaceTitle: string;
