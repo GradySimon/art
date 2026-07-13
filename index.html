@@ -13,17 +13,24 @@
           <p class="eyebrow">Generative studies · 2020–2026</p>
           <h1>Metaball</h1>
         </div>
-        <nav aria-label="Choose a study">
-          <button data-study="rings" aria-pressed="true">Orbital rings</button>
-          <button data-study="orbiters" aria-pressed="false">Orbiters</button>
-          <button data-study="cursor" aria-pressed="false">Cursor field</button>
-        </nav>
+        <div class="study-picker">
+          <button id="previous" aria-label="Previous study">←</button>
+          <label>
+            <span>Choose a study</span>
+            <select id="study-select"></select>
+          </label>
+          <button id="next" aria-label="Next study">→</button>
+        </div>
       </header>
       <section class="canvas-shell" aria-label="Metaball animation">
         <div id="canvas"></div>
         <div class="legend">
-          <span id="study-number">Study 01</span>
-          <span id="study-note">Counter-rotating positive and negative fields</span>
+          <span id="study-number">01 / 09</span>
+          <div class="study-description">
+            <strong id="study-title">Two Interacting Metaballs</strong>
+            <span id="study-note">The first shader study.</span>
+            <span id="study-provenance">Historical · Dec 15, 2019 · a2387c6</span>
+          </div>
         </div>
       </section>
     </main>

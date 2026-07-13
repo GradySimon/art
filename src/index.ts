@@ -1,21 +1,15 @@
 import * as THREE from "three";
 import type { Vec2 } from "./common-types";
-import { type Metaball, MetaballKind, metaballScene } from "./metaball";
+import type { Metaball } from "./metaball";
+import { MetaballKind } from "./metaball";
 import fragmentShader from "./shader/metaball.frag?raw";
 import vertexShader from "./shader/metaball.vert?raw";
+import { studies } from "./studies";
 import "./style.css";
 
-type Study = "rings" | "orbiters" | "cursor";
-
 const MAX_METABALLS = 100;
-const studyCopy: Record<Study, [string, string]> = {
-  rings: ["Study 01", "Counter-rotating positive and negative fields"],
-  orbiters: ["Study 02", "Small bodies tracing an eccentric central mass"],
-  cursor: ["Study 03", "A field that follows your pointer"],
-};
-
 const canvasHost = document.querySelector<HTMLDivElement>("#canvas")!;
-
+const studySelect = document.querySelector<HTMLSelectElement>("#study-select")!;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 canvasHost.appendChild(renderer.domElement);
@@ -26,59 +20,39 @@ const resolution = new THREE.Vector2();
 const uniforms = {
   u_resolution: { value: resolution },
   u_metaball_kind: { value: new Int32Array(MAX_METABALLS) },
-  u_metaball_pos: {
-    value: Array.from({ length: MAX_METABALLS }, () => new THREE.Vector2()),
-  },
+  u_metaball_pos: { value: Array.from({ length: MAX_METABALLS }, () => new THREE.Vector2()) },
   u_metaball_radius: { value: new Float32Array(MAX_METABALLS) },
   u_num_metaballs: { value: 0 },
   u_threshold: { value: 0.3 },
 };
 
-scene.add(
-  new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms }),
-  ),
-);
+scene.add(new THREE.Mesh(
+  new THREE.PlaneGeometry(2, 2),
+  new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms }),
+));
 
-let activeStudy: Study = "rings";
+let activeIndex = 0;
 let pointer: Vec2 = [0, 0];
 let paused = false;
 const startedAt = performance.now();
 
-function orbiters(elapsed: number): Metaball[] {
-  const bodies: Metaball[] = [
-    { position: [0, 0], radius: 0.24 },
-    { position: [0, 0], radius: 0.34, kind: MetaballKind.ZERO },
-  ];
-  for (let i = 0; i < 14; i += 1) {
-    const lane = i % 3;
-    const radius = 0.48 + lane * 0.17;
-    const speed = (lane === 1 ? -1 : 1) * (0.00008 + lane * 0.000025);
-    const angle = elapsed * speed + (i / 14) * Math.PI * 2;
-    bodies.push({
-      position: [Math.cos(angle) * radius, Math.sin(angle) * radius * 0.72],
-      radius: 0.045 + (i % 4) * 0.008,
-      kind: i % 5 === 0 ? MetaballKind.NEG_QUADRATIC : MetaballKind.QUADRATIC,
-    });
-  }
-  return bodies;
+for (const [index, study] of studies.entries()) {
+  const option = document.createElement("option");
+  option.value = String(index);
+  option.textContent = `${String(index + 1).padStart(2, "0")} — ${study.title}`;
+  studySelect.appendChild(option);
 }
 
-function cursorField(elapsed: number): Metaball[] {
-  const pulse = 0.11 + Math.sin(elapsed * 0.0018) * 0.025;
-  return [
-    { position: pointer, radius: pulse },
-    { position: [-pointer[0] * 0.55, -pointer[1] * 0.55], radius: 0.2 },
-    { position: [0, 0], radius: 0.3, kind: MetaballKind.ZERO },
-    { position: [pointer[0] * 0.35, -pointer[1] * 0.35], radius: 0.085, kind: MetaballKind.NEG_LINEAR },
-  ];
-}
-
-function ballsFor(study: Study, elapsed: number): Metaball[] {
-  if (study === "rings") return metaballScene({ elapsed_time: elapsed, mouse: pointer });
-  if (study === "orbiters") return orbiters(elapsed);
-  return cursorField(elapsed);
+function showStudy(index: number): void {
+  activeIndex = (index + studies.length) % studies.length;
+  const study = studies[activeIndex];
+  studySelect.value = String(activeIndex);
+  document.querySelector("#study-number")!.textContent =
+    `${String(activeIndex + 1).padStart(2, "0")} / ${String(studies.length).padStart(2, "0")}`;
+  document.querySelector("#study-title")!.textContent = study.title;
+  document.querySelector("#study-note")!.textContent = study.note;
+  document.querySelector("#study-provenance")!.textContent = study.provenance;
+  window.location.hash = study.id;
 }
 
 function uploadMetaballs(balls: Metaball[]): void {
@@ -97,7 +71,9 @@ function resize(): void {
 }
 
 function animate(now: number): void {
-  if (!paused) uploadMetaballs(ballsFor(activeStudy, now - startedAt));
+  if (!paused) {
+    uploadMetaballs(studies[activeIndex].render({ elapsed: now - startedAt, pointer }));
+  }
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
@@ -113,24 +89,18 @@ canvasHost.addEventListener("pointermove", (event) => {
   else pointer[1] /= aspect;
 });
 
-document.querySelectorAll<HTMLButtonElement>("[data-study]").forEach((button) => {
-  button.addEventListener("click", () => {
-    activeStudy = button.dataset.study as Study;
-    document.querySelectorAll<HTMLButtonElement>("[data-study]").forEach((item) =>
-      item.setAttribute("aria-pressed", String(item === button)),
-    );
-    const [number, note] = studyCopy[activeStudy];
-    document.querySelector("#study-number")!.textContent = number;
-    document.querySelector("#study-note")!.textContent = note;
-  });
-});
-
+studySelect.addEventListener("change", () => showStudy(Number(studySelect.value)));
+document.querySelector<HTMLButtonElement>("#previous")!.addEventListener("click", () => showStudy(activeIndex - 1));
+document.querySelector<HTMLButtonElement>("#next")!.addEventListener("click", () => showStudy(activeIndex + 1));
 window.addEventListener("keydown", (event) => {
-  if (event.code === "Space") {
-    paused = !paused;
-    event.preventDefault();
-  }
+  if (event.code === "Space") paused = !paused;
+  if (event.code === "ArrowLeft") showStudy(activeIndex - 1);
+  if (event.code === "ArrowRight") showStudy(activeIndex + 1);
+  if (["Space", "ArrowLeft", "ArrowRight"].includes(event.code)) event.preventDefault();
 });
 window.addEventListener("resize", resize);
+
+const hashIndex = studies.findIndex((study) => study.id === window.location.hash.slice(1));
+showStudy(hashIndex >= 0 ? hashIndex : 0);
 resize();
 requestAnimationFrame(animate);

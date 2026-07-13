@@ -15,5 +15,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src/index.ts", "src/metaball.ts", "src/common-types.ts", "src/vite-env.d.ts"]
+  "include": ["src/index.ts", "src/studies.ts", "src/metaball.ts", "src/common-types.ts", "src/vite-env.d.ts"]
 }

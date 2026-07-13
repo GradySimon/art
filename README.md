@@ -1,7 +1,7 @@
 # Metaball
 
-A small collection of browser-based generative studies built from the original
-2020 Three.js metaball shader.
+A browser for the generative studies preserved in the original 2019–2020
+Three.js metaball history.
 
 ## Run it
 
@@ -12,9 +12,9 @@ npm install
 npm run dev
 ```
 
-Then open the local URL printed by Vite. Use the controls above the canvas to
-switch studies. The cursor study responds to pointer movement, and the spacebar
-pauses or resumes the animation.
+Then open the local URL printed by Vite. Use the selector, arrow buttons, or
+left/right arrow keys to browse studies. The spacebar pauses or resumes the
+animation. Each study includes its source commit and provenance in the caption.
 
 ## Validate a change
 
@@ -26,7 +26,8 @@ npm run build
 ## Project shape
 
 - `src/index.ts` owns the Three.js renderer and the interactive studies.
-- `src/metaball.ts` contains the original ring composition helpers.
+- `src/studies.ts` ports the historical compositions and records provenance.
+- `src/metaball.ts` contains the original metaball types and composition helpers.
 - `src/shader/` contains the original GLSL field renderer.
 - `src/orbit-world.ts` and `src/rl.ts` preserve the experimental TensorFlow.js
   reinforcement-learning orbit simulation. They are not part of the current
