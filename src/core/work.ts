@@ -15,6 +15,7 @@ export interface WorkMetadata {
   path: string;
   title: string;
   description: string;
+  visible?: boolean;
   date?: string;
   provenance?: string;
   tags?: readonly string[];

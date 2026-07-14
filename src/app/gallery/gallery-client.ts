@@ -27,7 +27,7 @@ function show(index: number, pushHistory = false): void {
   document.querySelector("[data-work-title]")!.textContent = option.dataset.title ?? "";
   document.querySelector("[data-work-note]")!.textContent = option.dataset.description ?? "";
   document.querySelector("[data-work-provenance]")!.textContent = option.dataset.provenance ?? "";
-  document.querySelector("[data-workspace]")!.textContent = option.dataset.workspace ?? "";
+  document.querySelector("[data-workspace-label]")!.textContent = option.dataset.workspace ?? "";
   if (pushHistory) window.history.pushState({}, "", option.dataset.href);
 }
 

@@ -25,6 +25,7 @@ interface WorkMetadata {
   path: string;
   title: string;
   description: string;
+  visible?: boolean;
   date?: string;
   provenance?: string;
   tags?: readonly string[];
@@ -37,6 +38,10 @@ interface WorkImplementation {
 
 type Work = WorkMetadata & WorkImplementation;
 ```
+
+Works are hidden from the built-in catalog unless `visible: true` is present.
+Hidden works remain available to direct imports and the runtime registry, but
+the gallery does not list or generate pages for them.
 
 Every work has a path relative to its workspace. Its full identity mirrors its
 source path beneath `src/`:

@@ -41,11 +41,13 @@ export async function discoverCatalog(): Promise<CatalogWork[]> {
       (right.manifest.order ?? Number.MAX_SAFE_INTEGER),
     )
     .flatMap(({workspacePath, manifest, works}) =>
-      works.map(({mount: _mount, ...metadata}) => ({
-        ...metadata,
-        fullPath: fullWorkPath(workspacePath, metadata.path),
-        workspacePath,
-        workspaceTitle: manifest.title,
-      })),
+      works
+        .filter(({visible}) => visible ?? false)
+        .map(({mount: _mount, ...metadata}) => ({
+          ...metadata,
+          fullPath: fullWorkPath(workspacePath, metadata.path),
+          workspacePath,
+          workspaceTitle: manifest.title,
+        })),
     );
 }
