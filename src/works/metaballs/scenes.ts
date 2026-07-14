@@ -93,7 +93,7 @@ export const trickySun: MetaballScene = ({elapsed}) => [
   ...ring(elapsed + 3000, 8, {period: 48000, radius: 0.81}, 0.06, MetaballKind.NEG_QUADRATIC),
 ];
 
-export const orbitalRings: MetaballScene = ({elapsed}) => [
+export const sundance: MetaballScene = ({elapsed}) => [
   center(0.375 + Math.sin((elapsed * Math.PI * 2) / 24000) * 0.075),
   ...trickySun({elapsed, pointer: [0, 0]}).slice(1),
 ];

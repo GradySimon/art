@@ -47,20 +47,22 @@ export const WORKS = [
   ),
   lazyWork(
     {
-      path: "goo-gear",
-      title: "Goo Gear",
-      description: "A positive inner ring meshes with a negative outer ring.",
-      date: "2019-12-18",
-      provenance: "Historical · 8607ff6",
+      path: "sundance",
+      title: "Sundance",
+      description: "A February 2020 variation on Tricky Sun, with a slowly breathing central field.",
+      visible: true,
+      date: "2020-02-08",
+      provenance: "Historical variation · 870ecec",
       tags: ["generative", "shader", "metaball"],
     },
-    () => import("./goo-gear"),
+    () => import("./sundance"),
   ),
   lazyWork(
     {
       path: "two-grazing",
-      title: "2 Grazing",
+      title: "Caresses",
       description: "Two large bodies pass through a field of opposing satellites.",
+      visible: true,
       date: "2019-12-18",
       provenance: "Historical · f8b9178",
       tags: ["generative", "shader", "metaball"],
@@ -69,14 +71,15 @@ export const WORKS = [
   ),
   lazyWork(
     {
-      path: "taking-turns",
-      title: "Taking Turns",
-      description: "A hollow center anchors three interleaved orbital bands.",
+      path: "goo-gear",
+      title: "Goo Gear",
+      description: "A positive inner ring meshes with a negative outer ring.",
+      visible: true,
       date: "2019-12-18",
-      provenance: "Historical · b9657c9",
+      provenance: "Historical · 8607ff6",
       tags: ["generative", "shader", "metaball"],
     },
-    () => import("./taking-turns"),
+    () => import("./goo-gear"),
   ),
   lazyWork(
     {
@@ -91,14 +94,14 @@ export const WORKS = [
   ),
   lazyWork(
     {
-      path: "orbital-rings",
-      title: "Orbital Rings",
-      description: "A February 2020 variation on Tricky Sun, with a slowly breathing central field.",
-      date: "2020-02-08",
-      provenance: "Historical variation · 870ecec",
+      path: "taking-turns",
+      title: "Taking Turns",
+      description: "A hollow center anchors three interleaved orbital bands.",
+      date: "2019-12-18",
+      provenance: "Historical · b9657c9",
       tags: ["generative", "shader", "metaball"],
     },
-    () => import("./orbital-rings"),
+    () => import("./taking-turns"),
   ),
   lazyWork(
     {
