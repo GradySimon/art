@@ -20,6 +20,8 @@ button, select { font: inherit; }
   grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(24px, 4vw, 52px);
   overflow: hidden;
+  background-color: var(--gallery-background-color, #e8e5df);
+  transition: background-color 240ms ease;
 }
 
 .masthead {
@@ -72,8 +74,8 @@ work-player {
   display: block;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid #bdbdb5;
-  background: #e3e1dc;
+  border: 0;
+  background: var(--gallery-background-color, #e3e3e3);
 }
 
 .gallery .gallery-player {

@@ -25,6 +25,7 @@ const initial = catalog[initialIndex];
   class="gallery"
   data-gallery
   data-initial-href={galleryWorkHref(initial.fullPath, basePath)}
+  style={`--gallery-background-color: ${initial.galleryStyle?.backgroundColor ?? "#e8e5df"}`}
 >
   <header class="masthead">
     <h1>Works</h1>
@@ -40,6 +41,7 @@ const initial = catalog[initialIndex];
             data-description={work.description}
             data-date={work.date ?? ""}
             data-workspace={work.workspaceTitle}
+            data-gallery-background={work.galleryStyle?.backgroundColor ?? ""}
           >
             {String(index + 1).padStart(2, "0")} — {work.title}
           </option>

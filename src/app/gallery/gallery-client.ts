@@ -22,6 +22,11 @@ function show(index: number, pushHistory = false): void {
   select!.selectedIndex = normalized;
   const option = select!.options[normalized];
   player!.setAttribute("work", option.value);
+  player!.setAttribute("aria-label", option.dataset.title ?? "Interactive work");
+  gallery!.style.setProperty(
+    "--gallery-background-color",
+    option.dataset.galleryBackground || "#e8e5df",
+  );
   document.querySelector("[data-work-number]")!.textContent =
     `${String(normalized + 1).padStart(2, "0")} / ${String(count).padStart(2, "0")}`;
   document.querySelector("[data-work-title]")!.textContent = option.dataset.title ?? "";
@@ -35,6 +40,13 @@ select.addEventListener("change", () => show(select.selectedIndex, true));
 previous.addEventListener("click", () => show(select.selectedIndex - 1, true));
 next.addEventListener("click", () => show(select.selectedIndex + 1, true));
 window.addEventListener("keydown", (event) => {
+  if (
+    event.target instanceof HTMLInputElement
+    || event.target instanceof HTMLSelectElement
+    || event.target instanceof HTMLButtonElement
+    || event.target instanceof HTMLTextAreaElement
+    || (event.target instanceof HTMLElement && event.target.isContentEditable)
+  ) return;
   if (event.code === "ArrowLeft") show(select.selectedIndex - 1, true);
   if (event.code === "ArrowRight") show(select.selectedIndex + 1, true);
   if (["ArrowLeft", "ArrowRight"].includes(event.code)) event.preventDefault();

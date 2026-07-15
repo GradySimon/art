@@ -1,8 +1,16 @@
 import {Geometry, Mesh, Program, Renderer} from "ogl";
 import type {WorkImplementation, WorkInstance, WorkOptions} from "../../core";
+import type {MetaballControls} from "./controls";
+import {METABALL_BACKGROUND_RGB} from "./palette";
 import fragmentShader from "./shaders/metaball.frag?raw";
 import vertexShader from "./shaders/metaball.vert?raw";
-import {type Metaball, MetaballKind, type MetaballScene, type Vec2} from "./types";
+import {
+  type Metaball,
+  MetaballKind,
+  type MetaballScene,
+  type NumericParameters,
+  type Vec2,
+} from "./types";
 
 const MAX_METABALLS = 100;
 const WEBGL2_VERTEX_SHADER = `#version 300 es
@@ -22,9 +30,24 @@ const PLANE_POSITIONS = new Float32Array([
 ]);
 const PLANE_INDICES = new Uint16Array([0, 2, 1, 2, 3, 1]);
 
-export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplementation {
+interface MetaballImplementationOptions<Parameters extends NumericParameters<Parameters>> {
+  controls?: MetaballControls<Parameters>;
+}
+
+export function asWorkImplementation<
+  Parameters extends NumericParameters<Parameters> = Record<never, never>,
+>(
+  sceneDefinition: MetaballScene<Parameters>,
+  configuration: MetaballImplementationOptions<Parameters> = {},
+): WorkImplementation {
   return {
-    mount(container: HTMLElement, options: WorkOptions = {}): WorkInstance {
+    async mount(container: HTMLElement, options: WorkOptions = {}): Promise<WorkInstance> {
+      const parameters: Record<string, number> = {
+        ...(configuration.controls?.defaults ?? {}),
+      };
+      const controlsRuntime = configuration.controls
+        ? await import("./controls")
+        : undefined;
       const renderer = new Renderer({
         alpha: true,
         antialias: true,
@@ -45,6 +68,7 @@ export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplem
       const radii = Array<number>(MAX_METABALLS).fill(0);
       const uniforms = {
         u_resolution: {value: resolution},
+        u_background_color: {value: new Float32Array(METABALL_BACKGROUND_RGB)},
         u_metaball_kind: {value: kinds},
         u_metaball_pos: {value: positions},
         u_metaball_radius: {value: radii},
@@ -67,6 +91,9 @@ export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplem
       let destroyed = false;
       let frame = 0;
       const startedAt = performance.now();
+      const unmountControls = configuration.controls && controlsRuntime
+        ? controlsRuntime.mountControls(container, configuration.controls, parameters)
+        : undefined;
 
       const upload = (balls: Metaball[]): void => {
         uniforms.u_num_metaballs.value = Math.min(balls.length, MAX_METABALLS);
@@ -101,7 +128,13 @@ export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplem
 
       const animate = (now: number): void => {
         if (destroyed) return;
-        if (!paused) upload(sceneDefinition({elapsed: now - startedAt, pointer}));
+        if (!paused) {
+          upload(sceneDefinition({
+            elapsed: now - startedAt,
+            pointer,
+            parameters: parameters as Parameters,
+          }));
+        }
         renderer.render({scene: mesh});
         frame = requestAnimationFrame(animate);
       };
@@ -122,6 +155,7 @@ export function asWorkImplementation(sceneDefinition: MetaballScene): WorkImplem
           program.remove();
           gl.deleteShader(program.vertexShader);
           gl.deleteShader(program.fragmentShader);
+          unmountControls?.();
           gl.canvas.remove();
         },
       };

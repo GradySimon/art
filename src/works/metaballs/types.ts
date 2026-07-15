@@ -14,9 +14,20 @@ export interface Metaball {
   radius: number;
 }
 
-export interface SceneContext {
+export type NumericParameters<Parameters> = {
+  [Key in keyof Parameters]: number;
+};
+
+export interface SceneContext<
+  Parameters extends NumericParameters<Parameters> = Record<never, never>,
+> {
   elapsed: number;
   pointer: Vec2;
+  parameters: Readonly<Parameters>;
 }
 
-export type MetaballScene = (context: SceneContext) => Metaball[];
+export type MetaballScene<
+  Parameters extends NumericParameters<Parameters> = Record<never, never>,
+> = (
+  context: SceneContext<Parameters>,
+) => Metaball[];

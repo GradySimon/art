@@ -1,4 +1,9 @@
-import {type Metaball, MetaballKind, type MetaballScene, type Vec2} from "./types";
+import {
+  type Metaball,
+  MetaballKind,
+  type MetaballScene,
+  type Vec2,
+} from "./types";
 
 interface OrbitOptions {
   period?: number;
@@ -93,9 +98,57 @@ export const trickySun: MetaballScene = ({elapsed}) => [
   ...ring(elapsed + 3000, 8, {period: 48000, radius: 0.81}, 0.06, MetaballKind.NEG_QUADRATIC),
 ];
 
-export const sundance: MetaballScene = ({elapsed}) => [
-  center(0.375 + Math.sin((elapsed * Math.PI * 2) / 24000) * 0.075),
-  ...trickySun({elapsed, pointer: [0, 0]}).slice(1),
+export type SundanceParameters = {
+  innerCount: number;
+  middleCount: number;
+  outerCount: number;
+  innerVelocity: number;
+  middleVelocity: number;
+  outerVelocity: number;
+  pulse: number;
+  haloSize: number;
+};
+
+export const SUNDANCE_DEFAULTS: SundanceParameters = {
+  innerCount: 8,
+  middleCount: 8,
+  outerCount: 8,
+  innerVelocity: 1,
+  middleVelocity: 1,
+  outerVelocity: 1,
+  pulse: 0.075,
+  haloSize: 1,
+};
+
+export const sundance: MetaballScene<SundanceParameters> = ({elapsed, parameters}) => [
+  center(0.375 + Math.sin((elapsed * Math.PI * 2) / 24000) * parameters.pulse),
+  center(0.52, MetaballKind.ZERO),
+  ...ring(
+    elapsed * parameters.innerVelocity,
+    parameters.innerCount,
+    {period: 96000, radius: 0.73},
+    0.06 * parameters.haloSize,
+    MetaballKind.NEG_QUADRATIC,
+  ),
+  ...ring(
+    elapsed * parameters.middleVelocity,
+    parameters.middleCount,
+    {period: -48000, radius: 0.77},
+    0.055 * parameters.haloSize,
+  ),
+  ...ring(
+    elapsed * parameters.middleVelocity + 3000,
+    parameters.middleCount,
+    {period: -48000, radius: 0.77},
+    0.055 * parameters.haloSize,
+  ),
+  ...ring(
+    elapsed * parameters.outerVelocity + 3000,
+    parameters.outerCount,
+    {period: 48000, radius: 0.81},
+    0.06 * parameters.haloSize,
+    MetaballKind.NEG_QUADRATIC,
+  ),
 ];
 
 export const orbiters: MetaballScene = ({elapsed}) => {

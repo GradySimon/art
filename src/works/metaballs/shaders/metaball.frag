@@ -7,6 +7,7 @@ precision mediump float;
 #define SHOW_THRESHOLD true
 
 uniform vec2 u_resolution;
+uniform vec3 u_background_color;
 
 #define QUADRATIC 1
 #define NEG_QUADRATIC 2
@@ -31,7 +32,7 @@ vec4 color_for_density(float density) {
     }
     return grayscale(density);
   }
-  return density > u_threshold ? grayscale(0.0) : grayscale(0.89);
+  return density > u_threshold ? grayscale(0.0) : vec4(u_background_color, 1.0);
 }
 
 float quadratic_density(vec2 frag_pos, vec2 pos, float radius) {

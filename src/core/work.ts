@@ -11,6 +11,10 @@ export interface WorkInstance {
   destroy(): void;
 }
 
+export interface GalleryStyle {
+  backgroundColor?: string;
+}
+
 export interface WorkMetadata {
   path: string;
   title: string;
@@ -19,6 +23,7 @@ export interface WorkMetadata {
   date?: string;
   provenance?: string;
   tags?: readonly string[];
+  galleryStyle?: GalleryStyle;
 }
 
 export interface WorkImplementation {

@@ -1,0 +1,9 @@
+const BACKGROUND_CHANNEL = 0xe3;
+
+export const METABALL_BACKGROUND = `#${BACKGROUND_CHANNEL.toString(16).padStart(2, "0").repeat(3)}`;
+
+export const METABALL_BACKGROUND_RGB = [
+  BACKGROUND_CHANNEL / 255,
+  BACKGROUND_CHANNEL / 255,
+  BACKGROUND_CHANNEL / 255,
+] as const;

@@ -1,4 +1,7 @@
 import {lazyWork, type Work} from "../../core";
+import {METABALL_BACKGROUND} from "./palette";
+
+const galleryStyle = {backgroundColor: METABALL_BACKGROUND} as const;
 
 export const WORKS = [
   lazyWork(
@@ -9,6 +12,7 @@ export const WORKS = [
       date: "2019-12-15",
       provenance: "Source commit · a2387c6",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./two-interacting"),
   ),
@@ -20,6 +24,7 @@ export const WORKS = [
       date: "2019-12-15",
       provenance: "Source commit · b789f5f",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./oscillations-and-orbits"),
   ),
@@ -31,6 +36,7 @@ export const WORKS = [
       date: "2019-12-17",
       provenance: "Source commit · 6d21ea3",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./rotational-devotion"),
   ),
@@ -42,6 +48,7 @@ export const WORKS = [
       date: "2019-12-18",
       provenance: "Source commit · f7eea3b",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./rejoicing-slugs"),
   ),
@@ -54,6 +61,7 @@ export const WORKS = [
       date: "2020-02-08",
       provenance: "Source commit · 870ecec",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./sundance"),
   ),
@@ -66,6 +74,7 @@ export const WORKS = [
       date: "2019-12-18",
       provenance: "Source commit · f8b9178",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./two-grazing"),
   ),
@@ -78,6 +87,7 @@ export const WORKS = [
       date: "2019-12-18",
       provenance: "Source commit · 8607ff6",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./goo-gear"),
   ),
@@ -89,6 +99,7 @@ export const WORKS = [
       date: "2020-01-01",
       provenance: "Source commit · 0e7e230",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./tricky-sun"),
   ),
@@ -100,6 +111,7 @@ export const WORKS = [
       date: "2019-12-18",
       provenance: "Source commit · b9657c9",
       tags: ["generative", "shader", "metaball"],
+      galleryStyle,
     },
     () => import("./taking-turns"),
   ),
@@ -111,6 +123,7 @@ export const WORKS = [
       date: "2026-07-12",
       provenance: "Codex addition · 66c5f59",
       tags: ["generative", "shader", "metaball", "simulation"],
+      galleryStyle,
     },
     () => import("./orbiters"),
   ),
